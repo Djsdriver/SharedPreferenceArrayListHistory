@@ -14,15 +14,15 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
 
-class Main : AppCompatActivity() {
-    
+class Main :  AppCompatActivity(), CourseAdapter.ClickListener {
+
     lateinit var courseNameEdt: EditText
      lateinit var courseDescEdt: EditText
      lateinit var addBtn: Button
      lateinit var saveBtn: Button
      lateinit var courseRV: RecyclerView
 
-    var adapter= CourseAdapter()
+    var adapter= CourseAdapter(this)
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +38,8 @@ class Main : AppCompatActivity() {
 
 
         loadData()
+
+        //loaddata("courses")
 
 
 
@@ -60,23 +62,21 @@ class Main : AppCompatActivity() {
     }
 
     private fun buildRecyclerView() {
-
         val manager = LinearLayoutManager(this)
-        courseRV!!.setHasFixedSize(true)
-
-        courseRV!!.layoutManager = manager
-
-        courseRV!!.adapter = adapter
+        courseRV.setHasFixedSize(true)
+        courseRV.layoutManager = manager
+        courseRV.adapter = adapter
     }
 
     private fun loadData() {
 
         val sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE)
-        val json =sharedPreferences.getString("courses"," null")
+        val json =sharedPreferences.getString("courses","[]")
         val type = object : TypeToken<ArrayList<CourseModal>>() {}.type
         adapter.courseModalArrayList= Gson().fromJson(json, type)
 
     }
+
 
     private fun saveData() {
 
@@ -84,5 +84,9 @@ class Main : AppCompatActivity() {
         val json = Gson().toJson(adapter.courseModalArrayList)
         sharedPreferences.edit().putString("courses", json).apply()
         Toast.makeText(this, "Saved Array List to Shared preferences. ", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onClick(cours: CourseModal) {
+        Toast.makeText(this, "Вот тебе имя ${cours.courseName} вот тебе описание ${cours.courseDescription} ", Toast.LENGTH_SHORT).show()
     }
 }
